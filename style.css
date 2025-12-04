@@ -13,7 +13,7 @@ h1 {
 }
 
 #sudoku-grid {
-    display: flex; /* Utiliser flexbox pour empiler les lignes verticalement */
+    display: flex; 
     flex-direction: column;
     
     width: 450px; 
@@ -24,9 +24,8 @@ h1 {
 
 .sudoku-row {
     display: grid; 
-    /* Crée 9 colonnes de taille égale dans cette ligne */
     grid-template-columns: repeat(9, 1fr); 
-    height: 100%; /* Important pour que toutes les lignes prennent la même hauteur */
+    height: 100%; 
     width: 100%;
 }
 
