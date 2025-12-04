@@ -1,26 +1,33 @@
-
 const grilleInitiale = [
-    // Ligne 1
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    // Ligne 2
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    // Ligne 3
     [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    // Ligne 4
     [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    // Ligne 5
     [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    // Ligne 6
     [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    // Ligne 7
     [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    // Ligne 8
     [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    // Ligne 9
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ];
 
 const grilleHTML = document.getElementById('sudoku-grid');
+
+function validerSaisie(event) {
+    let input = event.target;
+    let valeur = input.value;
+    
+    valeur = valeur.replace(/[^1-9]/g, '');
+    
+    if (valeur.length > 1) {
+        valeur = valeur.slice(0, 1);
+    }
+    
+    if (valeur === '0') {
+        valeur = '';
+    }
+    
+    input.value = valeur;
+}
 
 function afficherGrille(grille) {
     grilleHTML.innerHTML = '';
@@ -42,7 +49,7 @@ function afficherGrille(grille) {
             caseInput.maxLength = 1;
             caseInput.dataset.row = i; 
             caseInput.dataset.col = j; 
-
+            
             if ((j + 1) % 3 === 0 && j !== 8) {
                 caseInput.classList.add('block-separator-right');
             }
@@ -54,6 +61,7 @@ function afficherGrille(grille) {
             } 
             else {
                 caseInput.classList.add('player-input');
+                caseInput.addEventListener('input', validerSaisie); 
             }
 
             ligneDiv.appendChild(caseInput);
@@ -61,6 +69,68 @@ function afficherGrille(grille) {
 
         grilleHTML.appendChild(ligneDiv);
     }
+}
+
+function recupererGrilleJoueur() {
+    const grilleJoueur = [];
+    for (let i = 0; i < 9; i++) {
+        grilleJoueur[i] = new Array(9).fill(0);
+    }
+
+    const inputs = document.querySelectorAll('#sudoku-grid input');
+
+    inputs.forEach(input => {
+        const row = parseInt(input.dataset.row);
+        const col = parseInt(input.dataset.col);
+        
+        const valeur = input.value.trim();
+
+        let chiffre = 0;
+        
+        if (valeur.length === 1 && !isNaN(parseInt(valeur))) {
+            const num = parseInt(valeur);
+            if (num >= 1 && num <= 9) {
+                chiffre = num;
+            }
+        }
+        
+        if (row >= 0 && row < 9 && col >= 0 && col < 9) {
+            grilleJoueur[row][col] = chiffre;
+        }
+    });
+
+    return grilleJoueur;
+}
+
+function verifierLigne(grille, indexLigne) {
+    const ligne = grille[indexLigne];
+    const chiffresTrouves = new Set();
+
+    for (const chiffre of ligne) {
+        if (chiffre !== 0) {
+            if (chiffresTrouves.has(chiffre)) {
+                return false;
+            }
+            chiffresTrouves.add(chiffre);
+        }
+    }
+    return true;
+}
+
+function verifierColonne(grille, indexColonne) {
+    const chiffresTrouves = new Set();
+    
+    for (let i = 0; i < 9; i++) {
+        const chiffre = grille[i][indexColonne];
+        
+        if (chiffre !== 0) {
+            if (chiffresTrouves.has(chiffre)) {
+                return false;
+            }
+            chiffresTrouves.add(chiffre);
+        }
+    }
+    return true;
 }
 
 afficherGrille(grilleInitiale);
