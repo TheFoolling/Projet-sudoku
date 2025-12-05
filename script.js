@@ -133,4 +133,72 @@ function verifierColonne(grille, indexColonne) {
     return true;
 }
 
+function verifierRegion(grille, startLigne, startColonne) {
+    const chiffresTrouves = new Set();
+    
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            const ligne = startLigne + i;
+            const colonne = startColonne + j;
+            
+            const chiffre = grille[ligne][colonne];
+            
+            if (chiffre !== 0) {
+                if (chiffresTrouves.has(chiffre)) {
+                    return false;
+                }
+                chiffresTrouves.add(chiffre);
+            }
+        }
+    }
+    return true;
+}
+
+function verifierGrilleComplete(grille) {
+    
+    for (let i = 0; i < 9; i++) {
+        if (!verifierLigne(grille, i)) {
+            return false;
+        }
+        if (!verifierColonne(grille, i)) {
+            return false;
+        }
+    }
+    for (let i = 0; i < 9; i += 3) {
+        for (let j = 0; j < 9; j += 3) {
+            if (!verifierRegion(grille, i, j)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+const body = document.body;
+const checkButton = document.getElementById('check-button');
+
+checkButton.addEventListener('click', () => {
+    const grilleJoueur = recupererGrilleJoueur();
+
+    const solutionValide = verifierGrilleComplete(grilleJoueur);
+
+    if (solutionValide) {
+        body.style.backgroundColor = '#d4edda'; 
+        checkButton.textContent = 'BRAVO!!';
+        checkButton.style.backgroundColor = '#28a745';
+        checkButton.disabled = true;
+    } else {
+        body.style.backgroundColor = '#f8d7da';
+        checkButton.textContent = 'Dommage...';
+        checkButton.style.backgroundColor = '#dc3545';
+    }
+    if (!solutionValide) {
+        setTimeout(() => {
+            body.style.backgroundColor = '#f4f4f4'; 
+            checkButton.textContent = 'Vérifier ma solution';
+            checkButton.style.backgroundColor = '#28a745';
+        }, 2000); 
+    }
+});
+
 afficherGrille(grilleInitiale);
