@@ -75,3 +75,19 @@ h1 {
     border: none;
     border-radius: 5px;
 }
+
+.correct {
+    background-color: #e6ffe6 !important; 
+}
+
+.incorrect {
+    background-color: #ffe6e6 !important; 
+}
+
+.pre-filled.incorrect {
+    background-color: #ffcccc !important;
+}
+
+.player-input.correct:focus {
+    background-color: #d8ffcc !important;
+}

@@ -174,12 +174,53 @@ function verifierGrilleComplete(grille) {
     return true;
 }
 
+function marquerGrille(grille) {
+    const toutesLesCases = document.querySelectorAll('#sudoku-grid input');
+    toutesLesCases.forEach(input => {
+        input.classList.remove('correct', 'incorrect');
+    });
+
+    for (let i = 0; i < 9; i++) {
+        const ligneValide = verifierLigne(grille, i);
+        const colonneValide = verifierColonne(grille, i);
+
+        const ligneInputs = document.querySelectorAll(`[data-row="${i}"]`);
+        ligneInputs.forEach((input, j) => {
+            const chiffre = grille[i][j];
+
+            if (chiffre !== 0) {
+                if (!ligneValide) {
+                    input.classList.add('incorrect');
+                } else {
+                    input.classList.add('correct');
+                }
+            }
+        });
+
+        const colonneInputs = document.querySelectorAll(`[data-col="${i}"]`);
+        colonneInputs.forEach((input, j) => {
+            const indexLigne = parseInt(input.dataset.row);
+            const chiffre = grille[indexLigne][i];
+          
+            if (chiffre !== 0) {
+                if (!colonneValide) {
+                    input.classList.add('incorrect');
+                } else if (ligneValide) {
+                    input.classList.add('correct');
+                }
+            }
+        });
+    }
+}
+
 const body = document.body;
 const checkButton = document.getElementById('check-button');
 
 checkButton.addEventListener('click', () => {
     const grilleJoueur = recupererGrilleJoueur();
 
+    marquerGrille(grilleJoueur); 
+    
     const solutionValide = verifierGrilleComplete(grilleJoueur);
 
     if (solutionValide) {
