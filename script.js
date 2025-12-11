@@ -1,15 +1,34 @@
-const grilleInitiale = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
+const grilleSolution = [
+    [5, 3, 4, 6, 7, 8, 9, 1, 2],
+    [6, 7, 2, 1, 9, 5, 3, 4, 8],
+    [1, 9, 8, 3, 4, 2, 5, 6, 7],
+    [8, 5, 9, 7, 6, 1, 4, 2, 3],
+    [4, 2, 6, 8, 5, 3, 7, 9, 1],
+    [7, 1, 3, 9, 2, 4, 8, 5, 6],
+    [9, 6, 1, 5, 3, 7, 2, 8, 4],
+    [2, 8, 7, 4, 1, 9, 6, 3, 5],
+    [3, 4, 5, 2, 8, 6, 1, 7, 9]
 ];
 
+const NOMBRE_DE_CASES_A_CACHER = 45;
+
+function genererGrilleDepart(solutionGrille, casesACacher) {
+    let grilleDepart = solutionGrille.map(arr => [...arr]);
+    let compteCaches = 0;
+    
+    while (compteCaches < casesACacher) {
+        let ligne = Math.floor(Math.random() * 9);
+        let colonne = Math.floor(Math.random() * 9);
+        
+        if (grilleDepart[ligne][colonne] !== 0) {
+            grilleDepart[ligne][colonne] = 0;
+            compteCaches++;
+        }
+    }
+    return grilleDepart;
+}
+
+const grilleInitiale = genererGrilleDepart(grilleSolution, NOMBRE_DE_CASES_A_CACHER);
 const grilleHTML = document.getElementById('sudoku-grid');
 
 function validerSaisie(event) {
@@ -33,7 +52,6 @@ function afficherGrille(grille) {
     grilleHTML.innerHTML = '';
 
     for (let i = 0; i < 9; i++) { 
-        
         const ligneDiv = document.createElement('div');
         ligneDiv.classList.add('sudoku-row');
         
@@ -43,7 +61,6 @@ function afficherGrille(grille) {
 
         for (let j = 0; j < 9; j++) { 
             const chiffre = grille[i][j]; 
-
             const caseInput = document.createElement('input');
             caseInput.type = 'text'; 
             caseInput.maxLength = 1;
@@ -66,7 +83,6 @@ function afficherGrille(grille) {
 
             ligneDiv.appendChild(caseInput);
         }
-
         grilleHTML.appendChild(ligneDiv);
     }
 }
@@ -82,9 +98,7 @@ function recupererGrilleJoueur() {
     inputs.forEach(input => {
         const row = parseInt(input.dataset.row);
         const col = parseInt(input.dataset.col);
-        
         const valeur = input.value.trim();
-
         let chiffre = 0;
         
         if (valeur.length === 1 && !isNaN(parseInt(valeur))) {
@@ -119,10 +133,8 @@ function verifierLigne(grille, indexLigne) {
 
 function verifierColonne(grille, indexColonne) {
     const chiffresTrouves = new Set();
-    
     for (let i = 0; i < 9; i++) {
         const chiffre = grille[i][indexColonne];
-        
         if (chiffre !== 0) {
             if (chiffresTrouves.has(chiffre)) {
                 return false;
@@ -135,12 +147,10 @@ function verifierColonne(grille, indexColonne) {
 
 function verifierRegion(grille, startLigne, startColonne) {
     const chiffresTrouves = new Set();
-    
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
             const ligne = startLigne + i;
             const colonne = startColonne + j;
-            
             const chiffre = grille[ligne][colonne];
             
             if (chiffre !== 0) {
@@ -155,20 +165,13 @@ function verifierRegion(grille, startLigne, startColonne) {
 }
 
 function verifierGrilleComplete(grille) {
-    
     for (let i = 0; i < 9; i++) {
-        if (!verifierLigne(grille, i)) {
-            return false;
-        }
-        if (!verifierColonne(grille, i)) {
-            return false;
-        }
+        if (!verifierLigne(grille, i)) return false;
+        if (!verifierColonne(grille, i)) return false;
     }
     for (let i = 0; i < 9; i += 3) {
         for (let j = 0; j < 9; j += 3) {
-            if (!verifierRegion(grille, i, j)) {
-                return false;
-            }
+            if (!verifierRegion(grille, i, j)) return false;
         }
     }
     return true;
@@ -187,7 +190,6 @@ function marquerGrille(grille) {
         const ligneInputs = document.querySelectorAll(`[data-row="${i}"]`);
         ligneInputs.forEach((input, j) => {
             const chiffre = grille[i][j];
-
             if (chiffre !== 0) {
                 if (!ligneValide) {
                     input.classList.add('incorrect');
@@ -201,7 +203,7 @@ function marquerGrille(grille) {
         colonneInputs.forEach((input, j) => {
             const indexLigne = parseInt(input.dataset.row);
             const chiffre = grille[indexLigne][i];
-          
+            
             if (chiffre !== 0) {
                 if (!colonneValide) {
                     input.classList.add('incorrect');
@@ -224,16 +226,30 @@ checkButton.addEventListener('click', () => {
     const solutionValide = verifierGrilleComplete(grilleJoueur);
 
     if (solutionValide) {
+        
         body.style.backgroundColor = '#d4edda'; 
         checkButton.textContent = 'BRAVO!!';
         checkButton.style.backgroundColor = '#28a745';
-        checkButton.disabled = true;
+        checkButton.disabled = true; 
+
+        let replayButton = document.getElementById('replay-button');
+        if (!replayButton) {
+            replayButton = document.createElement('button');
+            replayButton.id = 'replay-button';
+            replayButton.textContent = 'Rejouer ?';
+            
+            replayButton.addEventListener('click', () => {
+                window.location.reload();
+            });
+
+            checkButton.parentNode.appendChild(replayButton);
+        }
     } else {
-        body.style.backgroundColor = '#f8d7da';
+      
+        body.style.backgroundColor = '#f8d7da'; 
         checkButton.textContent = 'Dommage...';
         checkButton.style.backgroundColor = '#dc3545';
-    }
-    if (!solutionValide) {
+     
         setTimeout(() => {
             body.style.backgroundColor = '#f4f4f4'; 
             checkButton.textContent = 'Vérifier ma solution';

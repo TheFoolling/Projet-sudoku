@@ -65,15 +65,24 @@ h1 {
     border-bottom: 3px solid #000 !important;
 }
 
-#check-button {
+#check-button, #replay-button {
     padding: 10px 20px;
-    margin-top: 20px;
+    margin-top: 20px; 
     font-size: 16px;
     cursor: pointer;
     background-color: #28a745;
     color: white;
     border: none;
     border-radius: 5px;
+}
+
+#replay-button {
+    background-color: #007bff;
+}
+
+#check-button:disabled {
+    cursor: default; 
+    opacity: 1; 
 }
 
 .correct {
